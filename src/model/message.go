@@ -1,10 +1,10 @@
 package model
 
 import (
-	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 const (
@@ -12,19 +12,19 @@ const (
 )
 
 type Message struct {
-	Id          string    `bson:"_id",json:"id"`
-	Status      string    `json:"status"`
-	DeadLetter  bool      `json:"deadLetter"`
-	RetryTimes  int       `json:"retryTimes"`
-	Exchange    string    `json:"exchange"`
-	RoutingKey  string    `json:"routingKey"`
-	Body        string    `json:"body"`
-	CallbackUrl string    `json:"callbackUrl"`
-	Remark      string    `json:"remark"`
-	CreatedAt   time.Time `json:"createdAt"`
-	CreatedBy   string    `json:"createdBy"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	UpdatedBy   string    `json:"updatedBy"`
+	Id         string    `bson:"_id",json:"id"`
+	Status     string    `json:"status"`
+	DeadLetter bool      `json:"deadLetter"`
+	RetryTimes int       `json:"retryTimes"`
+	MsgQueue   string    `json:"msgQueue"`
+	MsgBody    string    `json:"msgBody"`
+	MsgProp    string    `json:"msgProp"`
+	Callback   string    `json:"callback"`
+	Remark     string    `json:"remark"`
+	CreatedAt  time.Time `json:"createdAt"`
+	CreatedBy  string    `json:"createdBy"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+	UpdatedBy  string    `json:"updatedBy"`
 }
 
 func InsertMessage(message *Message) error {

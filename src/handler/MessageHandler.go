@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"net/http"
-	"io/ioutil"
+	"../model"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
-	"../model"
+	"io/ioutil"
+	"net/http"
 )
 
 func RegisterMessageHandler(router *httprouter.Router) {
