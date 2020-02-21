@@ -20,7 +20,7 @@ type Config struct {
 
 func init() {
 	dir, _ := os.Getwd()
-	file, err := os.Open(dir + "/conf.json")
+	file, err := os.Open(dir + "/conf/app.json")
 	if err != nil {
 		log.Fatal(err)
 	}
