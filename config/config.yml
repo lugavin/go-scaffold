@@ -1,0 +1,18 @@
+app:
+  name: go-easy
+  version: 1.0.0
+
+http:
+  port: 8080
+
+logger:
+  log_level: debug
+  rollbar_env: go-easy
+
+postgres:
+  pool_max: 2
+  url: postgres://postgres:postgres@localhost:5432/postgres
+
+#rabbitmq:
+#  rpc_server_exchange: rpc_server
+#  rpc_client_exchange: rpc_client
