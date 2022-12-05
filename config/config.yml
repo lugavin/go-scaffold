@@ -1,5 +1,5 @@
 app:
-  name: go-easy
+  name: go-scaffold
   version: 1.0.0
 
 http:
@@ -7,7 +7,7 @@ http:
 
 logger:
   log_level: debug
-  rollbar_env: go-easy
+  rollbar_env: go-scaffold
 
 postgres:
   pool_max: 2

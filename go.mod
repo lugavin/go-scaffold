@@ -1,4 +1,4 @@
-module github.com/lugavin/go-easy
+module github.com/lugavin/go-scaffold
 
 go 1.17
 

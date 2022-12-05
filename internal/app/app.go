@@ -9,14 +9,14 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/lugavin/go-easy/config"
-	v1 "github.com/lugavin/go-easy/internal/controller/http/v1"
-	"github.com/lugavin/go-easy/internal/usecase"
-	"github.com/lugavin/go-easy/internal/usecase/repo"
-	"github.com/lugavin/go-easy/internal/usecase/webapi"
-	"github.com/lugavin/go-easy/pkg/httpserver"
-	"github.com/lugavin/go-easy/pkg/logger"
-	"github.com/lugavin/go-easy/pkg/postgres"
+	"github.com/lugavin/go-scaffold/config"
+	v1 "github.com/lugavin/go-scaffold/internal/controller/http/v1"
+	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/internal/usecase/repo"
+	"github.com/lugavin/go-scaffold/internal/usecase/webapi"
+	"github.com/lugavin/go-scaffold/pkg/httpserver"
+	"github.com/lugavin/go-scaffold/pkg/logger"
+	"github.com/lugavin/go-scaffold/pkg/postgres"
 )
 
 // Run creates objects via constructors.
@@ -58,8 +58,8 @@ func Run(cfg *config.Config) {
 		l.Info("app - Run - signal: " + s.String())
 	case err = <-httpServer.Notify():
 		l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
-	//case err = <-rmqServer.Notify():
-	//	l.Error(fmt.Errorf("app - Run - rmqServer.Notify: %w", err))
+		//case err = <-rmqServer.Notify():
+		//	l.Error(fmt.Errorf("app - Run - rmqServer.Notify: %w", err))
 	}
 
 	// Shutdown

@@ -4,7 +4,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/lugavin/go-easy/internal/entity"
+	"github.com/lugavin/go-scaffold/internal/entity"
 )
 
 //go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lugavin/go-easy/internal/entity"
-	"github.com/lugavin/go-easy/pkg/postgres"
+	"github.com/lugavin/go-scaffold/internal/entity"
+	"github.com/lugavin/go-scaffold/pkg/postgres"
 )
 
 const _defaultEntityCap = 64

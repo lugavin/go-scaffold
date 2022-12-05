@@ -7,9 +7,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 
-	"github.com/lugavin/go-easy/internal/entity"
-	"github.com/lugavin/go-easy/internal/usecase"
-	"github.com/lugavin/go-easy/pkg/logger"
+	"github.com/lugavin/go-scaffold/internal/entity"
+	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/pkg/logger"
 )
 
 type translationRoutes struct {

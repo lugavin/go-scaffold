@@ -6,9 +6,9 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/lugavin/go-easy/internal/entity"
-	"github.com/lugavin/go-easy/internal/usecase"
-	"github.com/lugavin/go-easy/pkg/rabbitmq/rmq_rpc/server"
+	"github.com/lugavin/go-scaffold/internal/entity"
+	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/pkg/rabbitmq/rmq_rpc/server"
 )
 
 type translationRoutes struct {

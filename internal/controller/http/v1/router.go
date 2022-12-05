@@ -8,8 +8,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	// Swagger docs.
-	"github.com/lugavin/go-easy/internal/usecase"
-	"github.com/lugavin/go-easy/pkg/logger"
+	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/pkg/logger"
 )
 
 // NewRouter -.

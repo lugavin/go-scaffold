@@ -1,4 +1,4 @@
-# go-easy
+# go-scaffold
 
 ## Clean Architecture
 

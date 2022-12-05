@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entity "github.com/lugavin/go-easy/internal/entity"
 	gomock "github.com/golang/mock/gomock"
+	entity "github.com/lugavin/go-scaffold/internal/entity"
 )
 
 // MockTranslation is a mock of Translation interface.
