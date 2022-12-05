@@ -7,7 +7,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	// Swagger docs.
 	"github.com/lugavin/go-scaffold/internal/usecase"
 	"github.com/lugavin/go-scaffold/pkg/logger"
 )
@@ -22,10 +21,6 @@ import (
 func NewRouter(router *chi.Mux, l logger.Interface, t usecase.Translation) {
 	// Options
 	router.Use(middleware.Logger)
-
-	// Swagger
-	//swaggerHandler := ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "DISABLE_SWAGGER_HTTP_HANDLER")
-	//router.Get("/swagger/*any", swaggerHandler)
 
 	// K8s probe
 	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {

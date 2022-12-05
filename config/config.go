@@ -13,6 +13,7 @@ type (
 		HTTP `yaml:"http"`
 		Log  `yaml:"logger"`
 		PG   `yaml:"postgres"`
+		//Mysql `yaml:"mysql"`
 		//RMQ  `yaml:"rabbitmq"`
 	}
 
@@ -38,6 +39,12 @@ type (
 		URL     string `env-required:"true"                 env:"PG_URL"`
 	}
 
+	// Mysql -.
+	Mysql struct {
+		PoolMax int    `env-required:"true" yaml:"pool_max" env:"MS_POOL_MAX"`
+		URL     string `env-required:"true"                 env:"MS_URL"`
+	}
+
 	// RMQ -.
 	RMQ struct {
 		ServerExchange string `env-required:"true" yaml:"rpc_server_exchange" env:"RMQ_RPC_SERVER"`
@@ -47,17 +54,11 @@ type (
 )
 
 // NewConfig returns app config.
-func NewConfig() (*Config, error) {
+func NewConfig(cfgPath string) (*Config, error) {
 	cfg := &Config{}
 
-	err := cleanenv.ReadConfig("./config/config.yml", cfg)
-	if err != nil {
+	if err := cleanenv.ReadConfig(cfgPath, cfg); err != nil {
 		return nil, fmt.Errorf("config error: %w", err)
-	}
-
-	err = cleanenv.ReadEnv(cfg)
-	if err != nil {
-		return nil, err
 	}
 
 	return cfg, nil

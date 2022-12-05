@@ -30,6 +30,12 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
+	//ms, err := mysql.New(cfg.Mysql.URL, mysql.MaxIdleConns(cfg.Mysql.PoolMax))
+	//if err != nil {
+	//	l.Fatal(fmt.Errorf("app - Run - mysql.New: %w", err))
+	//}
+	//defer ms.Close()
+
 	// Use case
 	translationUseCase := usecase.New(
 		repo.New(pg),
@@ -38,7 +44,6 @@ func Run(cfg *config.Config) {
 
 	// RabbitMQ RPC Server
 	//rmqRouter := amqprpc.NewRouter(translationUseCase)
-	//
 	//rmqServer, err := server.New(cfg.RMQ.URL, cfg.RMQ.ServerExchange, rmqRouter, l)
 	//if err != nil {
 	//	l.Fatal(fmt.Errorf("app - Run - rmqServer - server.New: %w", err))
