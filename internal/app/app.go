@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
-
 	"github.com/lugavin/go-scaffold/config"
 	v1 "github.com/lugavin/go-scaffold/internal/controller/http/v1"
 	"github.com/lugavin/go-scaffold/internal/usecase"
@@ -16,7 +15,7 @@ import (
 	"github.com/lugavin/go-scaffold/internal/usecase/webapi"
 	"github.com/lugavin/go-scaffold/pkg/httpserver"
 	"github.com/lugavin/go-scaffold/pkg/logger"
-	"github.com/lugavin/go-scaffold/pkg/postgres"
+	"github.com/lugavin/go-scaffold/pkg/mysql"
 )
 
 // Run creates objects via constructors.
@@ -24,21 +23,22 @@ func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
 	// Repository
-	pg, err := postgres.New(cfg.PG.URL, postgres.MaxPoolSize(cfg.PG.PoolMax))
-	if err != nil {
-		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
-	}
-	defer pg.Close()
-
-	//ms, err := mysql.New(cfg.Mysql.URL, mysql.MaxIdleConns(cfg.Mysql.PoolMax))
+	//pg, err := postgres.New(cfg.PG.URL, postgres.MaxPoolSize(cfg.PG.PoolMax))
 	//if err != nil {
-	//	l.Fatal(fmt.Errorf("app - Run - mysql.New: %w", err))
+	//	l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
 	//}
-	//defer ms.Close()
+	//defer pg.Close()
+
+	ms, err := mysql.New(cfg.Mysql.URL, mysql.MaxIdleConns(cfg.Mysql.PoolMax))
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - mysql.New: %w", err))
+	}
+	defer ms.Close()
 
 	// Use case
 	translationUseCase := usecase.New(
-		repo.New(pg),
+		//repo.New(pg),
+		repo.NewTransRepo(ms),
 		webapi.New(),
 	)
 

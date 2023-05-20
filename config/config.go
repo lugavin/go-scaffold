@@ -13,7 +13,7 @@ type (
 		HTTP `yaml:"http"`
 		Log  `yaml:"logger"`
 		PG   `yaml:"postgres"`
-		//Mysql `yaml:"mysql"`
+		Mysql `yaml:"mysql"`
 		//RMQ  `yaml:"rabbitmq"`
 	}
 
