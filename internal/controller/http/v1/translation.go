@@ -9,15 +9,15 @@ import (
 
 	"github.com/lugavin/go-scaffold/internal/entity"
 	"github.com/lugavin/go-scaffold/internal/usecase"
-	"github.com/lugavin/go-scaffold/pkg/logger"
+	"github.com/lugavin/go-scaffold/pkg/log"
 )
 
 type translationRoutes struct {
 	t usecase.Translation
-	l logger.Interface
+	l log.Logger
 }
 
-func newTranslationRoutes(router chi.Router, t usecase.Translation, l logger.Interface) {
+func newTranslationRoutes(router chi.Router, t usecase.Translation, l log.Logger) {
 	h := &translationRoutes{t, l}
 
 	router.Route("/translation", func(r chi.Router) {

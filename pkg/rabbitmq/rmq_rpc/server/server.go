@@ -7,7 +7,7 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/lugavin/go-scaffold/pkg/logger"
+	"github.com/lugavin/go-scaffold/pkg/log"
 	rmqrpc "github.com/lugavin/go-scaffold/pkg/rabbitmq/rmq_rpc"
 )
 
@@ -29,11 +29,11 @@ type Server struct {
 
 	timeout time.Duration
 
-	logger logger.Interface
+	logger log.Logger
 }
 
 // New -.
-func New(url, serverExchange string, router map[string]CallHandler, l logger.Interface, opts ...Option) (*Server, error) {
+func New(url, serverExchange string, router map[string]CallHandler, l log.Logger, opts ...Option) (*Server, error) {
 	cfg := rmqrpc.Config{
 		URL:      url,
 		WaitTime: _defaultWaitTime,

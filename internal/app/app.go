@@ -2,25 +2,31 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"github.com/segmentio/kafka-go"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/lugavin/go-scaffold/config"
-	v1 "github.com/lugavin/go-scaffold/internal/controller/http/v1"
+	"github.com/lugavin/go-scaffold/internal/controller/http/v1"
 	"github.com/lugavin/go-scaffold/internal/usecase"
 	"github.com/lugavin/go-scaffold/internal/usecase/repo"
 	"github.com/lugavin/go-scaffold/internal/usecase/webapi"
 	"github.com/lugavin/go-scaffold/pkg/httpserver"
-	"github.com/lugavin/go-scaffold/pkg/logger"
+	kak "github.com/lugavin/go-scaffold/pkg/kafka"
+	"github.com/lugavin/go-scaffold/pkg/kafka/consumer"
+	"github.com/lugavin/go-scaffold/pkg/kafka/producer"
+	"github.com/lugavin/go-scaffold/pkg/log"
 	"github.com/lugavin/go-scaffold/pkg/mysql"
+	"github.com/lugavin/go-scaffold/pkg/redis"
 )
 
 // Run creates objects via constructors.
 func Run(cfg *config.Config) {
-	l := logger.New(cfg.Log.Level)
+	l := log.New(cfg.Log.Level)
 
 	// Repository
 	//pg, err := postgres.New(cfg.PG.URL, postgres.MaxPoolSize(cfg.PG.PoolMax))
@@ -35,10 +41,28 @@ func Run(cfg *config.Config) {
 	}
 	defer ms.Close()
 
+	redisCli := redis.New(cfg.Redis.Addrs, redis.PoolSize(cfg.Redis.PoolSize))
+	defer redisCli.Close() // nolint: errcheck
+
+	p := producer.New(l, cfg.Kafka.Brokers)
+	defer p.Close()
+
+	err = p.PublishMessage(context.Background(), kafka.Message{
+		Topic: cfg.KafkaTopics.FooBarTopic.TopicName,
+		Key:   []byte("kkk1"),
+		Value: []byte("vvv1"),
+	})
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - kafka.PublishMessage: %w", err))
+	}
+
+	c := consumer.New(l, cfg.Kafka.Brokers, cfg.App.Name)
+	go c.ConsumeTopic(context.Background(), []string{cfg.KafkaTopics.FooBarTopic.TopicName}, 1, kak.NewMessageProcessor(l).ProcessMessages)
+
 	// Use case
-	translationUseCase := usecase.New(
-		//repo.New(pg),
-		repo.NewTransRepo(ms),
+	translationUseCase := usecase.NewTranslationUseCase(
+		//repo.NewTranslationPgRepo(pg),
+		repo.NewTranslationRepo(ms),
 		webapi.New(),
 	)
 

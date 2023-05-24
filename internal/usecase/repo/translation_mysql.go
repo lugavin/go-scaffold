@@ -10,18 +10,18 @@ import (
 
 const _defEntityCap = 64
 
-// TransRepo -.
-type TransRepo struct {
+// TranslationRepo -.
+type TranslationRepo struct {
 	*mysql.Mysql
 }
 
-// New -.
-func NewTransRepo(ms *mysql.Mysql) *TransRepo {
-	return &TransRepo{ms}
+// NewTranslationRepo -.
+func NewTranslationRepo(ms *mysql.Mysql) *TranslationRepo {
+	return &TranslationRepo{ms}
 }
 
 // GetHistory -.
-func (r *TransRepo) GetHistory(ctx context.Context) ([]entity.Translation, error) {
+func (r *TranslationRepo) GetHistory(ctx context.Context) ([]entity.Translation, error) {
 	sql, _, err := r.Builder.
 		Select("source, destination, original, translation").
 		From("history").
@@ -53,7 +53,7 @@ func (r *TransRepo) GetHistory(ctx context.Context) ([]entity.Translation, error
 }
 
 // Store -.
-func (r *TransRepo) Store(ctx context.Context, t entity.Translation) error {
+func (r *TranslationRepo) Store(ctx context.Context, t entity.Translation) error {
 	sql, args, err := r.Builder.
 		Insert("history").
 		Columns("source, destination, original, translation").

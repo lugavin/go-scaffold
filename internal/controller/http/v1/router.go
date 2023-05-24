@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/lugavin/go-scaffold/internal/usecase"
-	"github.com/lugavin/go-scaffold/pkg/logger"
+	"github.com/lugavin/go-scaffold/pkg/log"
 )
 
 // NewRouter -.
@@ -18,7 +18,7 @@ import (
 // @version     1.0
 // @host        localhost:8080
 // @BasePath    /v1
-func NewRouter(router *chi.Mux, l logger.Interface, t usecase.Translation) {
+func NewRouter(router *chi.Mux, l log.Logger, t usecase.Translation) {
 	// Options
 	router.Use(middleware.Logger)
 

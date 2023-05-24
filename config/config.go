@@ -12,9 +12,12 @@ type (
 		App  `yaml:"app"`
 		HTTP `yaml:"http"`
 		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
+		//PG   `yaml:"postgres"`
 		Mysql `yaml:"mysql"`
+		Redis `yaml:"redis"`
 		//RMQ  `yaml:"rabbitmq"`
+		Kafka       `yaml:"kafka"`
+		KafkaTopics `yaml:"kafka_topics"`
 	}
 
 	// App -.
@@ -45,11 +48,33 @@ type (
 		URL     string `env-required:"true"                 env:"MS_URL"`
 	}
 
+	// Redis -.
+	Redis struct {
+		Addrs    []string `env-required:"true"  yaml:"addrs" env:"REDIS_ADDRS"`
+		PoolSize int      `env-required:"true"  yaml:"pool_size" env:"REDIS_POOL_SIZE"`
+	}
+
 	// RMQ -.
 	RMQ struct {
 		ServerExchange string `env-required:"true" yaml:"rpc_server_exchange" env:"RMQ_RPC_SERVER"`
 		ClientExchange string `env-required:"true" yaml:"rpc_client_exchange" env:"RMQ_RPC_CLIENT"`
 		URL            string `env-required:"true"                            env:"RMQ_URL"`
+	}
+
+	// Kafka -.
+	Kafka struct {
+		Brokers []string `env-required:"true" yaml:"brokers" env:"KAFKA_BROKERS"`
+	}
+
+	// KafkaTopics -.
+	KafkaTopics struct {
+		FooBarTopic KafkaTopic `env-required:"true" yaml:"foo_bar_topic"`
+	}
+
+	KafkaTopic struct {
+		TopicName  string `env-required:"true" yaml:"name"`
+		Partitions int    `env-required:"true" yaml:"partitions"`
+		Replicas   int    `env-required:"true" yaml:"replicas"`
 	}
 )
 
