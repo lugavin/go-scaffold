@@ -22,61 +22,61 @@ type (
 
 	// App -.
 	App struct {
-		Name    string `env-required:"true" yaml:"name"    env:"APP_NAME"`
-		Version string `env-required:"true" yaml:"version" env:"APP_VERSION"`
+		Name    string `yaml:"name"    env:"APP_NAME"    env-required:"true" `
+		Version string `yaml:"version" env:"APP_VERSION" env-required:"true"`
 	}
 
 	// HTTP -.
 	HTTP struct {
-		Port string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+		Port string `yaml:"port" env:"HTTP_PORT" env-required:"true"`
 	}
 
 	// Logger -.
 	Logger struct {
-		Level       string   `env-required:"true"  yaml:"level" env:"LOGGER_LEVEL"`
-		OutputPaths []string `env-required:"true"  yaml:"output_paths" env:"LOGGER_OUTPUT_PATHS"`
-		Development bool     `yaml:"development" env:"LOGGER_DEVELOPMENT"`
+		Dev   bool     `yaml:"dev"   env:"LOGGER_DEV"`
+		Level string   `yaml:"level" env:"LOGGER_LEVEL" env-required:"true"`
+		Paths []string `yaml:"paths" env:"LOGGER_PATHS" env-required:"true"`
 	}
 
 	// PG -.
 	PG struct {
-		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
-		URL     string `env-required:"true"                 env:"PG_URL"`
+		URL     string `yaml:"url"      env:"PG_URL"      env-required:"true"`
+		PoolMax int    `yaml:"pool_max" env:"PG_POOL_MAX" env-required:"true"`
 	}
 
 	// Mysql -.
 	Mysql struct {
-		PoolMax int    `env-required:"true" yaml:"pool_max" env:"MS_POOL_MAX"`
-		URL     string `env-required:"true"                 env:"MS_URL"`
+		URL     string `yaml:"url"      env:"MS_URL"      env-required:"true"`
+		PoolMax int    `yaml:"pool_max" env:"MS_POOL_MAX" env-required:"true"`
 	}
 
 	// Redis -.
 	Redis struct {
-		Addrs    []string `env-required:"true"  yaml:"addrs" env:"REDIS_ADDRS"`
-		PoolSize int      `env-required:"true"  yaml:"pool_size" env:"REDIS_POOL_SIZE"`
+		Addrs    []string `yaml:"addrs"     env:"REDIS_ADDRS"     env-required:"true"`
+		PoolSize int      `yaml:"pool_size" env:"REDIS_POOL_SIZE" env-required:"true"`
 	}
 
 	// RMQ -.
 	RMQ struct {
-		ServerExchange string `env-required:"true" yaml:"rpc_server_exchange" env:"RMQ_RPC_SERVER"`
-		ClientExchange string `env-required:"true" yaml:"rpc_client_exchange" env:"RMQ_RPC_CLIENT"`
-		URL            string `env-required:"true"                            env:"RMQ_URL"`
+		URL            string `yaml:"url"             env:"RMQ_URL"             env-required:"true"`
+		ServerExchange string `yaml:"server_exchange" env:"RMQ_SERVER_EXCHANGE" env-required:"true"`
+		ClientExchange string `yaml:"client_exchange" env:"RMQ_CLIENT_EXCHANGE" env-required:"true"`
 	}
 
 	// Kafka -.
 	Kafka struct {
-		Brokers []string `env-required:"true" yaml:"brokers" env:"KAFKA_BROKERS"`
+		Brokers []string `yaml:"brokers" env:"KAFKA_BROKERS" env-required:"true"`
 	}
 
 	// KafkaTopics -.
 	KafkaTopics struct {
-		FooBarTopic KafkaTopic `env-required:"true" yaml:"foo_bar_topic"`
+		FooBarTopic KafkaTopic `yaml:"foo_bar_topic"`
 	}
 
 	KafkaTopic struct {
-		TopicName  string `env-required:"true" yaml:"name"`
-		Partitions int    `env-required:"true" yaml:"partitions"`
-		Replicas   int    `env-required:"true" yaml:"replicas"`
+		TopicName  string `yaml:"name"`
+		Partitions int    `yaml:"partitions"`
+		Replicas   int    `yaml:"replicas"`
 	}
 )
 

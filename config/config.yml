@@ -6,9 +6,9 @@ http:
   port: 8080
 
 logger:
+  dev: true
   level: debug
-  development: true
-  output_paths: [stdout, ./app.log]
+  paths: [stdout, ./app.log]
 
 #postgres:
 #  url: postgres://postgres:postgres@localhost:5432/postgres
@@ -20,8 +20,8 @@ mysql:
 
 #rabbitmq:
 #  url: amqp://guest:guest@localhost:5672/
-#  rpc_server_exchange: rpc_server
-#  rpc_client_exchange: rpc_client
+#  server_exchange: rpc_server
+#  client_exchange: rpc_client
 
 kafka:
   brokers: [kafka1:9092,kafka2:9093,kafka3:9094]

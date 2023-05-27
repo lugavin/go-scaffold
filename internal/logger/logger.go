@@ -21,7 +21,7 @@ func New(logCfg config.Logger) *zap.Logger {
 			err    error
 		)
 		// 创建一个配置实例
-		if logCfg.Development {
+		if logCfg.Dev {
 			zapCfg = zap.NewDevelopmentConfig()
 		} else {
 			zapCfg = zap.NewProductionConfig()
@@ -35,7 +35,7 @@ func New(logCfg config.Logger) *zap.Logger {
 		zapCfg.Level = level
 
 		// 设置日志输出路径
-		zapCfg.OutputPaths = logCfg.OutputPaths
+		zapCfg.OutputPaths = logCfg.Paths
 
 		// 创建一个Logger实例
 		if logger, err = zapCfg.Build(); err != nil {
