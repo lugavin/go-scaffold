@@ -12,10 +12,10 @@ type (
 		App    `yaml:"app"`
 		HTTP   `yaml:"http"`
 		Logger `yaml:"logger"`
-		//PG   `yaml:"postgres"`
+		//PG        `yaml:"postgres"`
 		Mysql `yaml:"mysql"`
 		Redis `yaml:"redis"`
-		//RMQ  `yaml:"rabbitmq"`
+		//RMQ       `yaml:"rabbitmq"`
 		Kafka       `yaml:"kafka"`
 		KafkaTopics `yaml:"kafka_topics"`
 	}
@@ -39,10 +39,10 @@ type (
 	}
 
 	// PG -.
-	PG struct {
-		URL     string `yaml:"url"      env:"PG_URL"      env-required:"true"`
-		PoolMax int    `yaml:"pool_max" env:"PG_POOL_MAX" env-required:"true"`
-	}
+	//PG struct {
+	//	URL     string `yaml:"url"      env:"PG_URL"      env-required:"true"`
+	//	PoolMax int    `yaml:"pool_max" env:"PG_POOL_MAX" env-required:"true"`
+	//}
 
 	// Mysql -.
 	Mysql struct {
@@ -57,11 +57,11 @@ type (
 	}
 
 	// RMQ -.
-	RMQ struct {
-		URL            string `yaml:"url"             env:"RMQ_URL"             env-required:"true"`
-		ServerExchange string `yaml:"server_exchange" env:"RMQ_SERVER_EXCHANGE" env-required:"true"`
-		ClientExchange string `yaml:"client_exchange" env:"RMQ_CLIENT_EXCHANGE" env-required:"true"`
-	}
+	//RMQ struct {
+	//	URL            string `yaml:"url"             env:"RMQ_URL"             env-required:"true"`
+	//	ServerExchange string `yaml:"server_exchange" env:"RMQ_SERVER_EXCHANGE" env-required:"true"`
+	//	ClientExchange string `yaml:"client_exchange" env:"RMQ_CLIENT_EXCHANGE" env-required:"true"`
+	//}
 
 	// Kafka -.
 	Kafka struct {

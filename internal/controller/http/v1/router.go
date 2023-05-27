@@ -6,9 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"go.uber.org/zap"
-
-	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/internal/env"
 )
 
 // NewRouter -.
@@ -18,7 +16,7 @@ import (
 // @version     1.0
 // @host        localhost:8080
 // @BasePath    /v1
-func NewRouter(router *chi.Mux, l *zap.Logger, t usecase.Translation) {
+func NewRouter(router *chi.Mux, e *env.Environment) {
 	// Options
 	router.Use(middleware.Logger)
 
@@ -32,6 +30,6 @@ func NewRouter(router *chi.Mux, l *zap.Logger, t usecase.Translation) {
 
 	// Routers
 	router.Route("/v1", func(r chi.Router) {
-		newTranslationRoutes(r, t, l)
+		newTranslationRoutes(r, e.TranslationUseCase(), e.Logger())
 	})
 }

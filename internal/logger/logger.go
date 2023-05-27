@@ -14,35 +14,35 @@ var (
 	logger *zap.Logger
 )
 
-func New(logCfg config.Logger) *zap.Logger {
+func New(c config.Logger) *zap.Logger {
 	once.Do(func() {
 		var (
-			zapCfg zap.Config
-			err    error
+			cfg zap.Config
+			err error
 		)
 		// 创建一个配置实例
-		if logCfg.Dev {
-			zapCfg = zap.NewDevelopmentConfig()
+		if c.Dev {
+			cfg = zap.NewDevelopmentConfig()
 		} else {
-			zapCfg = zap.NewProductionConfig()
+			cfg = zap.NewProductionConfig()
 		}
 
 		// 设置日志级别
 		level := zap.NewAtomicLevel()
-		if err = level.UnmarshalText([]byte(logCfg.Level)); err != nil {
+		if err = level.UnmarshalText([]byte(c.Level)); err != nil {
 			log.Fatalf("Failed to parse log level: %s", err)
 		}
-		zapCfg.Level = level
+		cfg.Level = level
 
 		// 设置日志输出路径
-		zapCfg.OutputPaths = logCfg.Paths
+		cfg.OutputPaths = c.Paths
 
 		// 创建一个Logger实例
-		if logger, err = zapCfg.Build(); err != nil {
+		if logger, err = cfg.Build(); err != nil {
 			log.Fatalf("logger.New error: %s", err)
 		}
 
-		// 将标准库日志重定向到 ZapLogger
+		// 将标准库日志重定向到ZapLogger
 		zap.RedirectStdLog(logger)
 	})
 	return logger

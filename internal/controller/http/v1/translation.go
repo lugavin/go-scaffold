@@ -12,6 +12,18 @@ import (
 	"github.com/lugavin/go-scaffold/internal/usecase"
 )
 
+type (
+	historyResponse struct {
+		History []entity.Translation `json:"history"`
+	}
+
+	doTranslateRequest struct {
+		Source      string `json:"source"       binding:"required"  example:"auto"`
+		Destination string `json:"destination"  binding:"required"  example:"en"`
+		Original    string `json:"original"     binding:"required"  example:"текст для перевода"`
+	}
+)
+
 type translationRoutes struct {
 	t usecase.Translation
 	l *zap.Logger
@@ -19,15 +31,10 @@ type translationRoutes struct {
 
 func newTranslationRoutes(router chi.Router, t usecase.Translation, l *zap.Logger) {
 	h := &translationRoutes{t, l}
-
 	router.Route("/translation", func(r chi.Router) {
 		r.Get("/history", h.history)
 		r.Post("/do-translate", h.doTranslate)
 	})
-}
-
-type historyResponse struct {
-	History []entity.Translation `json:"history"`
 }
 
 // @Summary     Show history
@@ -49,12 +56,6 @@ func (r *translationRoutes) history(resp http.ResponseWriter, req *http.Request)
 	}
 
 	render.JSON(resp, req, historyResponse{translations})
-}
-
-type doTranslateRequest struct {
-	Source      string `json:"source"       binding:"required"  example:"auto"`
-	Destination string `json:"destination"  binding:"required"  example:"en"`
-	Original    string `json:"original"     binding:"required"  example:"текст для перевода"`
 }
 
 // @Summary     Translate
