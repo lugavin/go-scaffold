@@ -39,11 +39,25 @@ func InitEnvironment(ctx context.Context, cfg *config.Config) (*Environment, err
 }
 
 func (e *Environment) Close() {
-	e.kafkaProducer.Close()
-	e.redisCli.Close()
-	e.mysql.Close()
-	//e.pg.Close()
-	_ = e.logger.Sync()
+	if e.kafkaProducer != nil {
+		e.kafkaProducer.Close()
+	}
+	if e.redisCli != nil {
+		e.redisCli.Close()
+	}
+	if e.mysql != nil {
+		e.mysql.Close()
+	}
+	//if e.pg != nil {
+	//	e.pg.Close()
+	//}
+	if e.logger != nil {
+		_ = e.logger.Sync()
+	}
+}
+
+func (e *Environment) RootContext() context.Context {
+	return e.rootContext
 }
 
 func (e *Environment) Config() *config.Config {

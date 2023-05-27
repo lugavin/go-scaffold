@@ -32,7 +32,7 @@ func Run(cfg *config.Config) {
 		context.Background(),
 		[]string{cfg.KafkaTopics.FooBarTopic.TopicName},
 		1,
-		amqp.NewKafkaProcessor(l).ProcessMessages,
+		amqp.NewMessageHandler(l, cfg).HandleMessage,
 	)
 
 	// HTTP Server

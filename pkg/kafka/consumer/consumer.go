@@ -61,10 +61,9 @@ func (c *consumer) ConsumeTopic(ctx context.Context, groupTopics []string, poolS
 			Timeout: _dialTimeout,
 		},
 	})
-
 	defer func() {
 		if err := r.Close(); err != nil {
-			c.logger.Error("consumerGroup.r.Close", zap.Error(err))
+			c.logger.Error("consumeTopic.r.Close", zap.Error(err))
 		}
 	}()
 
