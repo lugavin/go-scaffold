@@ -3,41 +3,43 @@ package app
 
 import (
 	"context"
-	"fmt"
-	"github.com/segmentio/kafka-go"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
+
 	"github.com/lugavin/go-scaffold/config"
+	"github.com/lugavin/go-scaffold/internal/controller/amqp"
 	"github.com/lugavin/go-scaffold/internal/controller/http/v1"
+	"github.com/lugavin/go-scaffold/internal/logger"
 	"github.com/lugavin/go-scaffold/internal/usecase"
 	"github.com/lugavin/go-scaffold/internal/usecase/repo"
 	"github.com/lugavin/go-scaffold/internal/usecase/webapi"
 	"github.com/lugavin/go-scaffold/pkg/httpserver"
-	kak "github.com/lugavin/go-scaffold/pkg/kafka"
 	"github.com/lugavin/go-scaffold/pkg/kafka/consumer"
 	"github.com/lugavin/go-scaffold/pkg/kafka/producer"
-	"github.com/lugavin/go-scaffold/pkg/log"
 	"github.com/lugavin/go-scaffold/pkg/mysql"
 	"github.com/lugavin/go-scaffold/pkg/redis"
 )
 
 // Run creates objects via constructors.
 func Run(cfg *config.Config) {
-	l := log.New(cfg.Log.Level)
+	l := logger.New(cfg.Logger)
+	defer l.Sync()
 
 	// Repository
 	//pg, err := postgres.New(cfg.PG.URL, postgres.MaxPoolSize(cfg.PG.PoolMax))
 	//if err != nil {
-	//	l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
+	//	log.Fatalf("app - Run - postgres.New: %s", err)
 	//}
 	//defer pg.Close()
 
 	ms, err := mysql.New(cfg.Mysql.URL, mysql.MaxIdleConns(cfg.Mysql.PoolMax))
 	if err != nil {
-		l.Fatal(fmt.Errorf("app - Run - mysql.New: %w", err))
+		log.Fatalf("app - Run - mysql.New: %s", err)
 	}
 	defer ms.Close()
 
@@ -47,17 +49,8 @@ func Run(cfg *config.Config) {
 	p := producer.New(l, cfg.Kafka.Brokers)
 	defer p.Close()
 
-	err = p.PublishMessage(context.Background(), kafka.Message{
-		Topic: cfg.KafkaTopics.FooBarTopic.TopicName,
-		Key:   []byte("kkk1"),
-		Value: []byte("vvv1"),
-	})
-	if err != nil {
-		l.Fatal(fmt.Errorf("app - Run - kafka.PublishMessage: %w", err))
-	}
-
 	c := consumer.New(l, cfg.Kafka.Brokers, cfg.App.Name)
-	go c.ConsumeTopic(context.Background(), []string{cfg.KafkaTopics.FooBarTopic.TopicName}, 1, kak.NewMessageProcessor(l).ProcessMessages)
+	go c.ConsumeTopic(context.Background(), []string{cfg.KafkaTopics.FooBarTopic.TopicName}, 1, amqp.NewKafkaProcessor(l).ProcessMessages)
 
 	// Use case
 	translationUseCase := usecase.NewTranslationUseCase(
@@ -70,7 +63,7 @@ func Run(cfg *config.Config) {
 	//rmqRouter := amqprpc.NewRouter(translationUseCase)
 	//rmqServer, err := server.New(cfg.RMQ.URL, cfg.RMQ.ServerExchange, rmqRouter, l)
 	//if err != nil {
-	//	l.Fatal(fmt.Errorf("app - Run - rmqServer - server.New: %w", err))
+	//	log.Fatalf("app - Run - rmqServer - server.New: %s", err)
 	//}
 
 	// HTTP Server
@@ -86,19 +79,17 @@ func Run(cfg *config.Config) {
 	case s := <-interrupt:
 		l.Info("app - Run - signal: " + s.String())
 	case err = <-httpServer.Notify():
-		l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
+		l.Error("app - Run - httpServer.Notify", zap.Error(err))
 		//case err = <-rmqServer.Notify():
-		//	l.Error(fmt.Errorf("app - Run - rmqServer.Notify: %w", err))
+		//	l.Error("app - Run - rmqServer.Notify", zap.Error(err))
 	}
 
 	// Shutdown
-	err = httpServer.Shutdown()
-	if err != nil {
-		l.Error(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))
+	if err = httpServer.Shutdown(); err != nil {
+		l.Error("app - Run - httpServer.Shutdown", zap.Error(err))
 	}
 
-	//err = rmqServer.Shutdown()
-	//if err != nil {
-	//	l.Error(fmt.Errorf("app - Run - rmqServer.Shutdown: %w", err))
+	//if err = rmqServer.Shutdown(); err != nil {
+	//	l.Error("app - Run - rmqServer.Shutdown", zap.Error(err))
 	//}
 }

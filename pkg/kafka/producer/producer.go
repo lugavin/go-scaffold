@@ -2,12 +2,12 @@ package producer
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/compress"
-
-	"github.com/lugavin/go-scaffold/pkg/log"
+	"go.uber.org/zap"
 )
 
 const (
@@ -26,9 +26,9 @@ type producer struct {
 	w *kafka.Writer
 }
 
-func New(logger log.Logger, brokers []string) *producer {
+func New(logger *zap.Logger, brokers []string) *producer {
 	var errLogger kafka.LoggerFunc = func(msg string, args ...interface{}) {
-		logger.Error(msg, args)
+		logger.Error(fmt.Sprintf(msg, args))
 	}
 	w := &kafka.Writer{
 		Addr:         kafka.TCP(brokers...),

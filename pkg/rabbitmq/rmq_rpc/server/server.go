@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/streadway/amqp"
+	"go.uber.org/zap"
 
-	"github.com/lugavin/go-scaffold/pkg/log"
 	rmqrpc "github.com/lugavin/go-scaffold/pkg/rabbitmq/rmq_rpc"
 )
 
@@ -29,11 +29,11 @@ type Server struct {
 
 	timeout time.Duration
 
-	logger log.Logger
+	logger *zap.Logger
 }
 
 // New -.
-func New(url, serverExchange string, router map[string]CallHandler, l log.Logger, opts ...Option) (*Server, error) {
+func New(url, serverExchange string, router map[string]CallHandler, l *zap.Logger, opts ...Option) (*Server, error) {
 	cfg := rmqrpc.Config{
 		URL:      url,
 		WaitTime: _defaultWaitTime,
@@ -95,14 +95,14 @@ func (s *Server) serveCall(d *amqp.Delivery) {
 	if err != nil {
 		s.publish(d, nil, rmqrpc.ErrInternalServer.Error())
 
-		s.logger.Error(err, "rmq_rpc server - Server - serveCall - callHandler")
+		s.logger.Error("rmq_rpc server - Server - serveCall - callHandler", zap.Error(err))
 
 		return
 	}
 
 	body, err := json.Marshal(response)
 	if err != nil {
-		s.logger.Error(err, "rmq_rpc server - Server - serveCall - json.Marshal")
+		s.logger.Error("rmq_rpc server - Server - serveCall - json.Marshal", zap.Error(err))
 	}
 
 	s.publish(d, body, rmqrpc.Success)
@@ -117,7 +117,7 @@ func (s *Server) publish(d *amqp.Delivery, body []byte, status string) {
 			Body:          body,
 		})
 	if err != nil {
-		s.logger.Error(err, "rmq_rpc server - Server - publish - s.conn.Channel.Publish")
+		s.logger.Error("rmq_rpc server - Server - publish - s.conn.Channel.Publish", zap.Error(err))
 	}
 }
 

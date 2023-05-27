@@ -11,7 +11,7 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"github.com/lugavin/go-scaffold/pkg/log"
+	"go.uber.org/zap"
 )
 
 var (
@@ -23,16 +23,16 @@ type HttpWrapper interface {
 	Do(ctx context.Context, method, url string, header http.Header, body io.Reader) (io.ReadCloser, error)
 }
 
-type Client struct {
+type HttpClient struct {
 	debug           bool
 	useCustomClient bool
-	logger          log.Logger
+	logger          *zap.Logger
 	client          *http.Client
 	customClient    HttpWrapper
 }
 
-func NewHttpClient(logger log.Logger, timeout time.Duration) *Client {
-	return &Client{
+func NewHttpClient(logger *zap.Logger, timeout time.Duration) *HttpClient {
+	return &HttpClient{
 		debug:           true,
 		useCustomClient: false,
 		logger:          logger,
@@ -40,10 +40,10 @@ func NewHttpClient(logger log.Logger, timeout time.Duration) *Client {
 	}
 }
 
-func (c Client) JSONRequest(ctx context.Context, method, url string, header http.Header, input, output interface{}) error {
+func (c HttpClient) JsonRequest(ctx context.Context, method, url string, header http.Header, input, output interface{}) error {
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(input); err != nil {
-		c.logger.Error(fmt.Errorf("encode JSON failed: %w", err))
+		c.logger.Error("encode JSON failed", zap.Error(err))
 		return err
 	}
 	var httpHeader http.Header
@@ -56,15 +56,17 @@ func (c Client) JSONRequest(ctx context.Context, method, url string, header http
 	return c.DoRequest(ctx, method, url, httpHeader, buf, output)
 }
 
-func (c Client) GetRequest(ctx context.Context, url string, input, output interface{}) error {
-	return c.JSONRequest(ctx, "GET", url, nil, input, output)
+func (c HttpClient) GetRequest(ctx context.Context, url string, input, output interface{}) error {
+	return c.JsonRequest(ctx, "GET", url, nil, input, output)
 }
 
-func (c Client) PostRequest(ctx context.Context, url string, input, output interface{}) error {
-	return c.JSONRequest(ctx, "POST", url, nil, input, output)
+func (c HttpClient) PostRequest(ctx context.Context, url string, input, output interface{}) error {
+	return c.JsonRequest(ctx, "POST", url, nil, input, output)
 }
 
-func (c Client) DoRequest(ctx context.Context, method, url string, header http.Header, body io.Reader, output interface{}) error {
+func (c HttpClient) DoRequest(ctx context.Context, method, url string, header http.Header, body io.Reader, output interface{}) error {
+	logger := c.logger.With(zap.String("url", url))
+
 	var (
 		err      error
 		respBody io.ReadCloser
@@ -79,13 +81,13 @@ func (c Client) DoRequest(ctx context.Context, method, url string, header http.H
 		}
 		respBody, err = c.customClient.Do(ctx, method, url, header, body)
 		if err != nil {
-			c.logger.Error(fmt.Errorf("request %s error: %w", url, err))
+			logger.Error("http request error", zap.Error(err))
 			return err
 		}
 	} else {
 		req, err := http.NewRequestWithContext(ctx, method, url, body)
 		if err != nil {
-			c.logger.Error(fmt.Errorf("init request %s failed: %w", url, err))
+			logger.Error("init request failed", zap.Error(err))
 			return err
 		}
 		req.Header = header
@@ -95,7 +97,7 @@ func (c Client) DoRequest(ctx context.Context, method, url string, header http.H
 		}
 		resp, err := c.client.Do(req)
 		if err != nil {
-			c.logger.Error(fmt.Errorf("request %s error: %w", url, err))
+			logger.Error("http request error", zap.Error(err))
 			return err
 		}
 		//if c.debug {
@@ -103,7 +105,7 @@ func (c Client) DoRequest(ctx context.Context, method, url string, header http.H
 		//	fmt.Println(string(b))
 		//}
 		if resp.StatusCode != http.StatusOK {
-			c.logger.Error(fmt.Errorf("request %s response not OK: %d", url, resp.StatusCode))
+			logger.Error("http response not OK", zap.Int("statusCode", resp.StatusCode))
 			return ErrHttpStatusNotOK
 		}
 		respBody = resp.Body
@@ -111,8 +113,9 @@ func (c Client) DoRequest(ctx context.Context, method, url string, header http.H
 	defer respBody.Close()
 
 	if err = json.NewDecoder(respBody).Decode(&output); err != nil {
-		c.logger.Error(fmt.Errorf("decode body failed: %w", err))
+		logger.Error("decode body failed", zap.Error(err))
 		return err
 	}
+	logger.Info("[DumpResponse]", zap.Any("output", output))
 	return nil
 }

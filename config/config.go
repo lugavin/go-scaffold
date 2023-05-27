@@ -9,9 +9,9 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		Log  `yaml:"logger"`
+		App    `yaml:"app"`
+		HTTP   `yaml:"http"`
+		Logger `yaml:"logger"`
 		//PG   `yaml:"postgres"`
 		Mysql `yaml:"mysql"`
 		Redis `yaml:"redis"`
@@ -31,9 +31,11 @@ type (
 		Port string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
 	}
 
-	// Log -.
-	Log struct {
-		Level string `env-required:"true" yaml:"log_level" env:"LOG_LEVEL"`
+	// Logger -.
+	Logger struct {
+		Level       string   `env-required:"true"  yaml:"level" env:"LOGGER_LEVEL"`
+		OutputPaths []string `env-required:"true"  yaml:"output_paths" env:"LOGGER_OUTPUT_PATHS"`
+		Development bool     `yaml:"development" env:"LOGGER_DEVELOPMENT"`
 	}
 
 	// PG -.

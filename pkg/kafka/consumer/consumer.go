@@ -2,12 +2,12 @@ package consumer
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/segmentio/kafka-go"
-
-	"github.com/lugavin/go-scaffold/pkg/log"
+	"go.uber.org/zap"
 )
 
 const (
@@ -30,19 +30,19 @@ type Consumer interface {
 }
 
 type consumer struct {
-	logger  log.Logger
+	logger  *zap.Logger
 	Brokers []string
 	GroupID string
 }
 
-func New(logger log.Logger, brokers []string, groupID string) *consumer {
+func New(logger *zap.Logger, brokers []string, groupID string) *consumer {
 	return &consumer{logger, brokers, groupID}
 }
 
 // ConsumeTopic start consumer group with given worker and pool size
 func (c *consumer) ConsumeTopic(ctx context.Context, groupTopics []string, poolSize int, worker Worker) {
 	var errLogger kafka.LoggerFunc = func(msg string, args ...interface{}) {
-		c.logger.Error(msg, args)
+		c.logger.Error(fmt.Sprintf(msg, args))
 	}
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:                c.Brokers,
@@ -64,11 +64,14 @@ func (c *consumer) ConsumeTopic(ctx context.Context, groupTopics []string, poolS
 
 	defer func() {
 		if err := r.Close(); err != nil {
-			c.logger.Warn("consumerGroup.r.Close: %v", err)
+			c.logger.Error("consumerGroup.r.Close", zap.Error(err))
 		}
 	}()
 
-	c.logger.Info("Starting consumer groupID: %s, topic: %+v, pool size: %v", c.GroupID, groupTopics, poolSize)
+	c.logger.Info("Starting consumer",
+		zap.String("groupID", c.GroupID),
+		zap.Strings("topics", groupTopics),
+		zap.Int("poolSize", poolSize))
 
 	wg := &sync.WaitGroup{}
 	for i := 0; i <= poolSize; i++ {

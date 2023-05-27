@@ -37,15 +37,11 @@ func (r *TranslationPgRepo) GetHistory(ctx context.Context) ([]entity.Translatio
 	defer rows.Close()
 
 	entities := make([]entity.Translation, 0, _defaultEntityCap)
-
 	for rows.Next() {
 		e := entity.Translation{}
-
-		err = rows.Scan(&e.Source, &e.Destination, &e.Original, &e.Translation)
-		if err != nil {
+		if err = rows.Scan(&e.Source, &e.Destination, &e.Original, &e.Translation); err != nil {
 			return nil, fmt.Errorf("TranslationRepo - GetHistory - rows.Scan: %w", err)
 		}
-
 		entities = append(entities, e)
 	}
 

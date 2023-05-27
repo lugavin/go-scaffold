@@ -6,8 +6,9 @@ http:
   port: 8080
 
 logger:
-  log_level: debug
-  rollbar_env: go-scaffold
+  level: debug
+  development: true
+  output_paths: [stdout, ./app.log]
 
 #postgres:
 #  url: postgres://postgres:postgres@localhost:5432/postgres

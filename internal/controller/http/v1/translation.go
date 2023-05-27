@@ -6,18 +6,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"go.uber.org/zap"
 
 	"github.com/lugavin/go-scaffold/internal/entity"
 	"github.com/lugavin/go-scaffold/internal/usecase"
-	"github.com/lugavin/go-scaffold/pkg/log"
 )
 
 type translationRoutes struct {
 	t usecase.Translation
-	l log.Logger
+	l *zap.Logger
 }
 
-func newTranslationRoutes(router chi.Router, t usecase.Translation, l log.Logger) {
+func newTranslationRoutes(router chi.Router, t usecase.Translation, l *zap.Logger) {
 	h := &translationRoutes{t, l}
 
 	router.Route("/translation", func(r chi.Router) {
@@ -42,7 +42,7 @@ type historyResponse struct {
 func (r *translationRoutes) history(resp http.ResponseWriter, req *http.Request) {
 	translations, err := r.t.History(req.Context())
 	if err != nil {
-		r.l.Error(err, "http - v1 - history")
+		r.l.Error("http - v1 - history", zap.Error(err))
 		errorResponse(resp, req, http.StatusInternalServerError, "database problems")
 
 		return
@@ -71,7 +71,7 @@ type doTranslateRequest struct {
 func (r *translationRoutes) doTranslate(resp http.ResponseWriter, req *http.Request) {
 	var request doTranslateRequest
 	if err := json.NewDecoder(req.Body).Decode(&request); err != nil {
-		r.l.Error(err, "http - v1 - doTranslate")
+		r.l.Error("http - v1 - doTranslate", zap.Error(err))
 		errorResponse(resp, req, http.StatusBadRequest, "invalid request body")
 
 		return
@@ -86,7 +86,7 @@ func (r *translationRoutes) doTranslate(resp http.ResponseWriter, req *http.Requ
 		},
 	)
 	if err != nil {
-		r.l.Error(err, "http - v1 - doTranslate")
+		r.l.Error("http - v1 - doTranslate", zap.Error(err))
 		errorResponse(resp, req, http.StatusInternalServerError, "translation service problems")
 
 		return
