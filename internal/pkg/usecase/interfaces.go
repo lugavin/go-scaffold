@@ -4,7 +4,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/lugavin/go-scaffold/internal/entity"
+	"github.com/lugavin/go-scaffold/internal/pkg/entity"
 )
 
 //go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
@@ -25,5 +25,17 @@ type (
 	// TranslationWebAPI -.
 	TranslationWebAPI interface {
 		Translate(entity.Translation) (entity.Translation, error)
+	}
+)
+
+type (
+	// AuthToken -.
+	AuthToken interface {
+		CreateAuthToken(ctx context.Context, uid int64, clientIP string) (entity.AuthTokenDTO, error)
+	}
+
+	// AuthTokenRepo -.
+	AuthTokenRepo interface {
+		Store(context.Context, entity.AuthToken) error
 	}
 )

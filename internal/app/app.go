@@ -12,15 +12,15 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/lugavin/go-scaffold/config"
-	"github.com/lugavin/go-scaffold/internal/controller/amqp"
-	"github.com/lugavin/go-scaffold/internal/controller/http/v1"
-	"github.com/lugavin/go-scaffold/internal/env"
+	"github.com/lugavin/go-scaffold/internal/pkg/controller/amqp"
+	"github.com/lugavin/go-scaffold/internal/pkg/controller/http/v1"
+	"github.com/lugavin/go-scaffold/internal/pkg/env"
 	"github.com/lugavin/go-scaffold/pkg/httpserver"
 )
 
 // Run creates objects via constructors.
-func Run(cfg *config.Config) {
-	e, err := env.InitEnvironment(context.Background(), cfg)
+func Run(c *config.Config) {
+	e, err := env.InitEnvironment(context.Background(), c)
 	if err != nil {
 		log.Fatalf("app - Run - env.InitEnvironment: %s", err)
 	}
@@ -30,15 +30,15 @@ func Run(cfg *config.Config) {
 
 	go e.KafkaConsumer().ConsumeTopic(
 		context.Background(),
-		[]string{cfg.KafkaTopics.FooBarTopic.TopicName},
+		[]string{c.KafkaTopics.FooBarTopic.TopicName},
 		1,
-		amqp.NewMessageHandler(l, cfg).HandleMessage,
+		amqp.NewMessageHandler(l, c).HandleMessage,
 	)
 
 	// HTTP Server
 	router := chi.NewRouter()
 	v1.NewRouter(router, e)
-	httpServer := httpserver.New(router, httpserver.Port(cfg.HTTP.Port))
+	httpServer := httpserver.New(router, httpserver.Port(c.HTTP.Port))
 
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)

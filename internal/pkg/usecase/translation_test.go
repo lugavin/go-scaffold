@@ -8,8 +8,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/lugavin/go-scaffold/internal/entity"
-	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/internal/pkg/entity"
+	"github.com/lugavin/go-scaffold/internal/pkg/usecase"
 )
 
 var errInternalServErr = errors.New("internal server error")

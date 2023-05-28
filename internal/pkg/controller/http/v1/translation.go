@@ -8,8 +8,8 @@ import (
 	"github.com/go-chi/render"
 	"go.uber.org/zap"
 
-	"github.com/lugavin/go-scaffold/internal/entity"
-	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/internal/pkg/entity"
+	"github.com/lugavin/go-scaffold/internal/pkg/usecase"
 )
 
 type (

@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	entity "github.com/lugavin/go-scaffold/internal/entity"
+	entity "github.com/lugavin/go-scaffold/internal/pkg/entity"
 )
 
 // MockTranslation is a mock of Translation interface.

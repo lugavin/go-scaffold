@@ -6,8 +6,8 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/lugavin/go-scaffold/internal/entity"
-	"github.com/lugavin/go-scaffold/internal/usecase"
+	"github.com/lugavin/go-scaffold/internal/pkg/entity"
+	"github.com/lugavin/go-scaffold/internal/pkg/usecase"
 	"github.com/lugavin/go-scaffold/pkg/rabbitmq/rmq_rpc/server"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lugavin/go-scaffold/internal/entity"
+	"github.com/lugavin/go-scaffold/internal/pkg/entity"
 )
 
 // TranslationUseCase -.

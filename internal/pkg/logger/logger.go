@@ -45,5 +45,6 @@ func New(c config.Logger) *zap.Logger {
 		// 将标准库日志重定向到ZapLogger
 		zap.RedirectStdLog(logger)
 	})
+
 	return logger
 }

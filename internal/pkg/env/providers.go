@@ -5,10 +5,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/lugavin/go-scaffold/config"
-	"github.com/lugavin/go-scaffold/internal/logger"
-	"github.com/lugavin/go-scaffold/internal/usecase"
-	"github.com/lugavin/go-scaffold/internal/usecase/repo"
-	"github.com/lugavin/go-scaffold/internal/usecase/webapi"
+	"github.com/lugavin/go-scaffold/internal/pkg/logger"
+	"github.com/lugavin/go-scaffold/internal/pkg/usecase"
+	"github.com/lugavin/go-scaffold/internal/pkg/usecase/repo"
+	"github.com/lugavin/go-scaffold/internal/pkg/usecase/webapi"
 	"github.com/lugavin/go-scaffold/pkg/kafka/consumer"
 	"github.com/lugavin/go-scaffold/pkg/kafka/producer"
 	"github.com/lugavin/go-scaffold/pkg/mysql"
@@ -48,7 +48,7 @@ func provideTranslationRepo(ms *mysql.Mysql) *repo.TranslationRepo {
 }
 
 func provideTranslationWebAPI(_ *config.Config) *webapi.TranslationWebAPI {
-	return webapi.New()
+	return webapi.NewTranslationWebAPI()
 }
 
 func provideTranslationUseCase(r *repo.TranslationRepo, w *webapi.TranslationWebAPI) *usecase.TranslationUseCase {
