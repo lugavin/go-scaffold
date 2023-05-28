@@ -54,3 +54,11 @@ func provideTranslationWebAPI(_ *config.Config) *webapi.TranslationWebAPI {
 func provideTranslationUseCase(r *repo.TranslationRepo, w *webapi.TranslationWebAPI) *usecase.TranslationUseCase {
 	return usecase.NewTranslationUseCase(r, w)
 }
+
+func provideAuthTokenRepo(ms *mysql.Mysql) *repo.AuthTokenRepo {
+	return repo.NewAuthTokenRepo(ms)
+}
+
+func provideAuthTokenUseCase(r *repo.AuthTokenRepo, c *config.Config) (*usecase.AuthTokenUseCase, error) {
+	return usecase.NewAuthTokenUseCase(r, c.JWT)
+}

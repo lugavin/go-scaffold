@@ -25,6 +25,11 @@ func initEnvironment(ctx context.Context, cfg *config.Config) (*Environment, err
 	translationRepo := provideTranslationRepo(mysql)
 	translationWebAPI := provideTranslationWebAPI(cfg)
 	translationUseCase := provideTranslationUseCase(translationRepo, translationWebAPI)
+	authTokenRepo := provideAuthTokenRepo(mysql)
+	authTokenUseCase, err := provideAuthTokenUseCase(authTokenRepo, cfg)
+	if err != nil {
+		return nil, err
+	}
 	environment := &Environment{
 		logger:             logger,
 		mysql:              mysql,
@@ -34,6 +39,8 @@ func initEnvironment(ctx context.Context, cfg *config.Config) (*Environment, err
 		translationRepo:    translationRepo,
 		translationWebAPI:  translationWebAPI,
 		translationUseCase: translationUseCase,
+		authTokenRepo:      authTokenRepo,
+		authTokenUseCase:   authTokenUseCase,
 	}
 	return environment, nil
 }

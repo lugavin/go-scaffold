@@ -26,6 +26,8 @@ type Environment struct {
 	translationRepo    *repo.TranslationRepo
 	translationWebAPI  *webapi.TranslationWebAPI
 	translationUseCase *usecase.TranslationUseCase
+	authTokenRepo      *repo.AuthTokenRepo
+	authTokenUseCase   *usecase.AuthTokenUseCase
 }
 
 func InitEnvironment(ctx context.Context, cfg *config.Config) (*Environment, error) {
@@ -94,4 +96,12 @@ func (e *Environment) TranslationWebAPI() *webapi.TranslationWebAPI {
 
 func (e *Environment) TranslationUseCase() *usecase.TranslationUseCase {
 	return e.translationUseCase
+}
+
+func (e *Environment) AuthTokenRepo() *repo.AuthTokenRepo {
+	return e.authTokenRepo
+}
+
+func (e *Environment) AuthTokenUseCase() *usecase.AuthTokenUseCase {
+	return e.authTokenUseCase
 }

@@ -12,6 +12,7 @@ type (
 		App    `yaml:"app"`
 		HTTP   `yaml:"http"`
 		Logger `yaml:"logger"`
+		JWT    `yaml:"jwt"`
 		//PG        `yaml:"postgres"`
 		Mysql `yaml:"mysql"`
 		Redis `yaml:"redis"`
@@ -28,14 +29,22 @@ type (
 
 	// HTTP -.
 	HTTP struct {
-		Port string `yaml:"port" env:"HTTP_PORT" env-required:"true"`
+		Port int `yaml:"port" env:"HTTP_PORT" env-default:"8080"`
 	}
 
 	// Logger -.
 	Logger struct {
 		Dev   bool     `yaml:"dev"   env:"LOGGER_DEV"`
-		Level string   `yaml:"level" env:"LOGGER_LEVEL" env-required:"true"`
 		Paths []string `yaml:"paths" env:"LOGGER_PATHS" env-required:"true"`
+		Level string   `yaml:"level" env:"LOGGER_LEVEL" env-default:"info"`
+	}
+
+	// JWT -.
+	JWT struct {
+		PrivateKey      string `yaml:"private_key"       env:"JWT_PRIVATE_KEY" env-required:"true"`
+		PublicKey       string `yaml:"public_key"        env:"JWT_PUBLIC_KEY"  env-required:"true"`
+		AccessTokenExp  int    `yaml:"access_token_exp"  env:"JWT_ACCESS_TOKEN_EXP"  env-default:"300"`
+		RefreshTokenExp int    `yaml:"refresh_token_exp" env:"JWT_REFRESH_TOKEN_EXP" env-default:"2592000"`
 	}
 
 	// PG -.

@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"net"
+	"strconv"
 	"time"
 )
 
@@ -9,9 +10,9 @@ import (
 type Option func(*Server)
 
 // Port -.
-func Port(port string) Option {
+func Port(port int) Option {
 	return func(s *Server) {
-		s.server.Addr = net.JoinHostPort("", port)
+		s.server.Addr = net.JoinHostPort("", strconv.Itoa(port))
 	}
 }
 
