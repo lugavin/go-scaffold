@@ -51,6 +51,7 @@ func (h *messageHandler) HandleMessage(ctx context.Context, r *kafka.Reader, wg 
 		case h.config.KafkaTopics.FooBarTopic.TopicName:
 			h.handleFooBarMessage(ctx, r, msg)
 		default:
+			h.logger.Warn("no message handler found", zap.String("topic", msg.Topic))
 		}
 
 		// 手动提交消息的偏移量

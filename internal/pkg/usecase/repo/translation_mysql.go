@@ -8,6 +8,11 @@ import (
 	"github.com/lugavin/go-scaffold/pkg/mysql"
 )
 
+var (
+	historyTableName = "history"
+	historyColumns   = []string{"source", "destination", "original", "translation"}
+)
+
 const _defEntityCap = 64
 
 // TranslationRepo -.
@@ -23,8 +28,8 @@ func NewTranslationRepo(ms *mysql.Mysql) *TranslationRepo {
 // GetHistory -.
 func (r *TranslationRepo) GetHistory(ctx context.Context) ([]entity.Translation, error) {
 	sql, _, err := r.Builder.
-		Select("source, destination, original, translation").
-		From("history").
+		Select(historyColumns...).
+		From(historyTableName).
 		ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("TranslationRepo - GetHistory - r.Builder: %w", err)
@@ -51,8 +56,8 @@ func (r *TranslationRepo) GetHistory(ctx context.Context) ([]entity.Translation,
 // Store -.
 func (r *TranslationRepo) Store(ctx context.Context, t entity.Translation) error {
 	sql, args, err := r.Builder.
-		Insert("history").
-		Columns("source, destination, original, translation").
+		Insert(historyTableName).
+		Columns(historyColumns...).
 		Values(t.Source, t.Destination, t.Original, t.Translation).
 		ToSql()
 	if err != nil {

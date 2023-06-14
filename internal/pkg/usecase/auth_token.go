@@ -31,27 +31,52 @@ func NewAuthTokenUseCase(r AuthTokenRepo, c config.JWT) (*AuthTokenUseCase, erro
 	return &AuthTokenUseCase{r, c, priKey, pubKey}, nil
 }
 
-func (uc *AuthTokenUseCase) CreateAuthToken(ctx context.Context, uid int64, clientIP string) (entity.AuthTokenDTO, error) {
-	ret := entity.AuthTokenDTO{}
+func (uc *AuthTokenUseCase) CreateAuthToken(ctx context.Context, uid int64, clientIP string) (*entity.AuthTokenDTO, error) {
 	token, err := uc.generateToken(uid)
 	if err != nil {
-		return ret, fmt.Errorf("AuthTokenUseCase - CreateAuthToken - uc.generateAccessToken: %w", err)
+		return nil, fmt.Errorf("AuthTokenUseCase - CreateAuthToken - uc.generateAccessToken: %w", err)
 	}
 
-	e := entity.AuthToken{
+	ent := entity.AuthToken{
 		UID:          uid,
 		ClientIP:     clientIP,
 		RefreshToken: uuid.NewString(),
 		CreatedAt:    time.Now(),
 		ExpiredAt:    time.Now().Add(time.Duration(uc.cfg.RefreshTokenExp) * time.Second),
 	}
-	if err = uc.repo.Store(ctx, e); err != nil {
-		return ret, fmt.Errorf("AuthTokenUseCase - CreateAuthToken - uc.repo.Store: %w", err)
+	if err = uc.repo.Store(ctx, ent); err != nil {
+		return nil, fmt.Errorf("AuthTokenUseCase - CreateAuthToken - uc.repo.Store: %w", err)
 	}
-	ret.RefreshToken = e.RefreshToken
-	ret.ExpiresIn = e.ExpiredAt.Unix()
-	ret.AccessToken = token
-	return ret, nil
+
+	return &entity.AuthTokenDTO{
+		AccessToken:  token,
+		RefreshToken: ent.RefreshToken,
+		ExpiresIn:    ent.ExpiredAt.Unix(),
+	}, nil
+}
+
+func (uc *AuthTokenUseCase) RenewAuthToken(ctx context.Context, uid int64, refreshToken string) (*entity.AuthTokenDTO, error) {
+	row, err := uc.repo.GetAuthToken(ctx, refreshToken)
+	if err != nil {
+		return nil, fmt.Errorf("AuthTokenUseCase - RenewAuthToken - uc.repo.GetAuthToken: %w", err)
+	}
+	if row == nil {
+		return nil, fmt.Errorf("AuthTokenUseCase - RenewAuthToken - refreshTokenInvalid: %s", refreshToken)
+	}
+
+	if row.UID != uid || row.ExpiredAt.Before(time.Now()) {
+		return nil, fmt.Errorf("AuthTokenUseCase - RenewAuthToken - refreshTokenExpired: %s", refreshToken)
+	}
+	token, err := uc.generateToken(uid)
+	if err != nil {
+		return nil, fmt.Errorf("AuthTokenUseCase - RenewAuthToken - uc.generateAccessToken: %w", err)
+	}
+
+	return &entity.AuthTokenDTO{
+		AccessToken:  token,
+		RefreshToken: row.RefreshToken,
+		ExpiresIn:    row.ExpiredAt.Unix(),
+	}, nil
 }
 
 func (uc *AuthTokenUseCase) generateToken(uid int64) (string, error) {

@@ -14,31 +14,31 @@ import (
 	"github.com/lugavin/go-scaffold/config"
 	"github.com/lugavin/go-scaffold/internal/pkg/controller/amqp"
 	"github.com/lugavin/go-scaffold/internal/pkg/controller/http/v1"
-	"github.com/lugavin/go-scaffold/internal/pkg/env"
+	envt "github.com/lugavin/go-scaffold/internal/pkg/env"
 	"github.com/lugavin/go-scaffold/pkg/httpserver"
 )
 
 // Run creates objects via constructors.
-func Run(c *config.Config) {
-	e, err := env.InitEnvironment(context.Background(), c)
+func Run(cfg *config.Config) {
+	env, err := envt.InitEnvironment(context.Background(), cfg)
 	if err != nil {
 		log.Fatalf("app - Run - env.InitEnvironment: %s", err)
 	}
-	defer e.Close()
+	defer env.Close()
 
-	l := e.Logger()
+	logger := env.Logger()
 
-	go e.KafkaConsumer().ConsumeTopic(
+	go env.KafkaConsumer().ConsumeTopic(
 		context.Background(),
-		[]string{c.KafkaTopics.FooBarTopic.TopicName},
+		[]string{cfg.KafkaTopics.FooBarTopic.TopicName},
 		1,
-		amqp.NewMessageHandler(l, c).HandleMessage,
+		amqp.NewMessageHandler(logger, cfg).HandleMessage,
 	)
 
 	// HTTP Server
 	router := chi.NewRouter()
-	v1.NewRouter(router, e)
-	httpServer := httpserver.New(router, httpserver.Port(c.HTTP.Port))
+	v1.NewRouter(router, env)
+	httpServer := httpserver.New(router, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)
@@ -46,13 +46,13 @@ func Run(c *config.Config) {
 
 	select {
 	case s := <-interrupt:
-		l.Info("app - Run - signal: " + s.String())
+		logger.Info("app - Run - signal: " + s.String())
 	case err = <-httpServer.Notify():
-		l.Error("app - Run - httpServer.Notify", zap.Error(err))
+		logger.Error("app - Run - httpServer.Notify", zap.Error(err))
 	}
 
 	// Shutdown
 	if err = httpServer.Shutdown(); err != nil {
-		l.Error("app - Run - httpServer.Shutdown", zap.Error(err))
+		logger.Error("app - Run - httpServer.Shutdown", zap.Error(err))
 	}
 }

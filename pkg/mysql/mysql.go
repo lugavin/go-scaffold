@@ -1,13 +1,13 @@
 package mysql
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
 const (
@@ -29,7 +29,7 @@ type Mysql struct {
 	connMaxLifetime time.Duration
 
 	Builder squirrel.StatementBuilderType
-	Pool    *sql.DB // DB is a connection pool
+	Pool    *sqlx.DB // DB is a connection pool
 }
 
 // New -.
@@ -50,13 +50,13 @@ func New(url string, opts ...Option) (*Mysql, error) {
 
 	var (
 		err  error
-		pool *sql.DB
+		pool *sqlx.DB
 	)
 	for cfg.connAttempts > 0 {
 		// When we first executed sql.Open("mysql", ds), the DB returned is actually a pool of underlying DB connections.
 		// The sql package takes care of maintaining the pool, creating and freeing connections automatically.
 		// This DB is also safe to be concurrently accessed by multiple Goroutines.
-		pool, err = sql.Open("mysql", url)
+		pool, err = sqlx.Open("mysql", url)
 		if err == nil {
 			break
 		}
@@ -77,7 +77,7 @@ func New(url string, opts ...Option) (*Mysql, error) {
 	cfg.Pool.SetMaxIdleConns(cfg.maxIdleConns)
 	cfg.Pool.SetConnMaxIdleTime(cfg.connMaxIdleTime)
 	cfg.Pool.SetConnMaxLifetime(cfg.connMaxLifetime)
-	cfg.Builder = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
+	cfg.Builder = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question)
 
 	return cfg, nil
 }

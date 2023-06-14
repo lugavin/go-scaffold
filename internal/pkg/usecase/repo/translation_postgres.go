@@ -23,8 +23,8 @@ func NewTranslationPgRepo(pg *postgres.Postgres) *TranslationPgRepo {
 // GetHistory -.
 func (r *TranslationPgRepo) GetHistory(ctx context.Context) ([]entity.Translation, error) {
 	sql, _, err := r.Builder.
-		Select("source, destination, original, translation").
-		From("history").
+		Select(historyColumns...).
+		From(historyTableName).
 		ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("TranslationRepo - GetHistory - r.Builder: %w", err)
@@ -51,8 +51,8 @@ func (r *TranslationPgRepo) GetHistory(ctx context.Context) ([]entity.Translatio
 // Store -.
 func (r *TranslationPgRepo) Store(ctx context.Context, t entity.Translation) error {
 	sql, args, err := r.Builder.
-		Insert("history").
-		Columns("source, destination, original, translation").
+		Insert(historyTableName).
+		Columns(historyColumns...).
 		Values(t.Source, t.Destination, t.Original, t.Translation).
 		ToSql()
 	if err != nil {
