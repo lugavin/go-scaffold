@@ -32,7 +32,7 @@ func New(handler http.Handler, opts ...Option) *Server {
 
 	s := &Server{
 		server:          httpServer,
-		notify:          make(chan error, 1),
+		notify:          make(chan error, 1), // Create a channel to pass error messages
 		shutdownTimeout: _defaultShutdownTimeout,
 	}
 

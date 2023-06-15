@@ -58,7 +58,9 @@ func New(url string, opts ...Option) (*Mysql, error) {
 		// This DB is also safe to be concurrently accessed by multiple Goroutines.
 		pool, err = sqlx.Open("mysql", url)
 		if err == nil {
-			break
+			if err = pool.Ping(); err == nil {
+				break
+			}
 		}
 
 		log.Printf("Mysql is trying to connect, attempts left: %d", cfg.connAttempts)

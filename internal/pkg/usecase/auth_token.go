@@ -63,10 +63,10 @@ func (uc *AuthTokenUseCase) RenewAuthToken(ctx context.Context, uid int64, refre
 	if row == nil {
 		return nil, fmt.Errorf("AuthTokenUseCase - RenewAuthToken - refreshTokenInvalid: %s", refreshToken)
 	}
-
 	if row.UID != uid || row.ExpiredAt.Before(time.Now()) {
 		return nil, fmt.Errorf("AuthTokenUseCase - RenewAuthToken - refreshTokenExpired: %s", refreshToken)
 	}
+
 	token, err := uc.generateToken(uid)
 	if err != nil {
 		return nil, fmt.Errorf("AuthTokenUseCase - RenewAuthToken - uc.generateAccessToken: %w", err)

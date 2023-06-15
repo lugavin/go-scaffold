@@ -9,16 +9,16 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App    `yaml:"app"`
-		HTTP   `yaml:"http"`
-		Logger `yaml:"logger"`
-		JWT    `yaml:"jwt"`
-		//PG        `yaml:"postgres"`
-		Mysql `yaml:"mysql"`
-		Redis `yaml:"redis"`
-		//RMQ       `yaml:"rabbitmq"`
+		App         `yaml:"app"`
+		HTTP        `yaml:"http"`
+		Logger      `yaml:"logger"`
+		JWT         `yaml:"jwt"`
+		Mysql       `yaml:"mysql"`
+		Redis       `yaml:"redis"`
 		Kafka       `yaml:"kafka"`
 		KafkaTopics `yaml:"kafka_topics"`
+		//PG        `yaml:"postgres"`
+		//RMQ       `yaml:"rabbitmq"`
 	}
 
 	// App -.

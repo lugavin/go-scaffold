@@ -44,10 +44,13 @@ func Run(cfg *config.Config) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
+	// If none of the channels in the case statement are available, the select statement will block the current goroutine until a channel is available
 	select {
 	case s := <-interrupt:
+		// Server was interrupted
 		logger.Info("app - Run - signal: " + s.String())
 	case err = <-httpServer.Notify():
+		// Server failed to start
 		logger.Error("app - Run - httpServer.Notify", zap.Error(err))
 	}
 
