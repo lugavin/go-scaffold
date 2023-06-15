@@ -49,6 +49,8 @@ func New(handler http.Handler, opts ...Option) *Server {
 func (s *Server) start() {
 	go func() {
 		s.notify <- s.server.ListenAndServe()
+		// Closing the channel is just a signal that no new data will be sent to the channel.
+		// The data that has been sent to the channel can still be read by the receiver until all the data in the channel has been read.
 		close(s.notify)
 	}()
 }

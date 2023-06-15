@@ -10,18 +10,23 @@ import (
 	"github.com/lugavin/go-scaffold/config"
 )
 
+type TopicMessageHandler interface {
+	HandleTopicMessage(ctx context.Context, r *kafka.Reader, msg kafka.Message)
+}
+
 // MessageHandler handler methods must implement kafka.Worker func method interface
 type MessageHandler interface {
 	HandleMessage(ctx context.Context, r *kafka.Reader, wg *sync.WaitGroup, workerID int)
 }
 
 type messageHandler struct {
-	logger *zap.Logger
-	config *config.Config
+	logger  *zap.Logger
+	config  *config.Config
+	handler TopicMessageHandler
 }
 
-func NewMessageHandler(logger *zap.Logger, config *config.Config) *messageHandler {
-	return &messageHandler{logger, config}
+func NewMessageHandler(logger *zap.Logger, config *config.Config, handler TopicMessageHandler) *messageHandler {
+	return &messageHandler{logger, config, handler}
 }
 
 func (h *messageHandler) HandleMessage(ctx context.Context, r *kafka.Reader, wg *sync.WaitGroup, workerID int) {
@@ -47,20 +52,11 @@ func (h *messageHandler) HandleMessage(ctx context.Context, r *kafka.Reader, wg 
 			zap.ByteString("key", msg.Key),
 			zap.ByteString("value", msg.Value))
 
-		switch msg.Topic {
-		case h.config.KafkaTopics.FooBarTopic.TopicName:
-			h.handleFooBarMessage(ctx, r, msg)
-		default:
-			h.logger.Warn("no message handler found", zap.String("topic", msg.Topic))
-		}
+		h.handler.HandleTopicMessage(ctx, r, msg)
 
 		// 手动提交消息的偏移量
 		if err = r.CommitMessages(ctx, msg); err != nil {
 			h.logger.Error("messageHandler.r.CommitMessages", zap.Error(err))
 		}
 	}
-}
-
-func (h *messageHandler) handleFooBarMessage(ctx context.Context, r *kafka.Reader, msg kafka.Message) {
-	h.logger.Info("handleFooBarMessage...")
 }

@@ -28,12 +28,7 @@ func Run(cfg *config.Config) {
 
 	logger := env.Logger()
 
-	go env.KafkaConsumer().ConsumeTopic(
-		context.Background(),
-		[]string{cfg.KafkaTopics.FooBarTopic.TopicName},
-		1,
-		amqp.NewMessageHandler(logger, cfg).HandleMessage,
-	)
+	startKafkaConsumer(env)
 
 	// HTTP Server
 	router := chi.NewRouter()
@@ -44,7 +39,7 @@ func Run(cfg *config.Config) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
-	// If none of the channels in the case statement are available, the select statement will block the current goroutine until a channel is available
+	// If none of the channels in the case statement are available, the select statement will block the current goroutine until a channel is available.
 	select {
 	case s := <-interrupt:
 		// Server was interrupted
@@ -57,5 +52,24 @@ func Run(cfg *config.Config) {
 	// Shutdown
 	if err = httpServer.Shutdown(); err != nil {
 		logger.Error("app - Run - httpServer.Shutdown", zap.Error(err))
+	}
+}
+
+func startKafkaConsumer(env *envt.Environment) {
+	var (
+		cfg      = env.Config()
+		logger   = env.Logger()
+		consumer = env.KafkaConsumer()
+	)
+	handlers := map[string]amqp.TopicMessageHandler{
+		cfg.FooBarTopic.TopicName: amqp.NewFooBarMessageHandler(logger, cfg),
+	}
+	for topic, handler := range handlers {
+		go consumer.ConsumeTopic(
+			context.Background(),
+			[]string{topic},
+			1,
+			amqp.NewMessageHandler(logger, cfg, handler).HandleMessage,
+		)
 	}
 }
