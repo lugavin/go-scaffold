@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-
 	"github.com/lugavin/go-scaffold/internal/pkg/env"
 )
 
@@ -17,9 +16,12 @@ import (
 // @version     1.0
 // @host        localhost:8080
 // @BasePath    /v1
-func NewRouter(router *chi.Mux, e *env.Environment) {
+func NewRouter(e *env.Environment) http.Handler {
+	router := chi.NewRouter()
+
 	// Options
 	router.Use(middleware.Logger)
+	router.Use(middleware.RealIP)
 
 	// K8s probe
 	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -27,10 +29,12 @@ func NewRouter(router *chi.Mux, e *env.Environment) {
 	})
 
 	// Prometheus metrics
-	//handler.Get("/metrics", promhttp.Handler())
+	//http.Handle("/metrics", promhttp.Handler())
 
 	// Routers
 	router.Route("/v1", func(r chi.Router) {
 		newTranslationRoutes(r, e.TranslationUseCase(), e.Logger())
 	})
+
+	return router
 }

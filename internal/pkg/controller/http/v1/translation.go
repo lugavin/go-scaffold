@@ -29,9 +29,9 @@ type translationRoutes struct {
 	l *zap.Logger
 }
 
-func newTranslationRoutes(router chi.Router, t usecase.Translation, l *zap.Logger) {
+func newTranslationRoutes(r chi.Router, t usecase.Translation, l *zap.Logger) {
 	h := &translationRoutes{t, l}
-	router.Route("/translation", func(r chi.Router) {
+	r.Route("/translation", func(r chi.Router) {
 		r.Get("/history", h.history)
 		r.Post("/do-translate", h.doTranslate)
 	})

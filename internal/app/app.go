@@ -8,12 +8,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 
 	"github.com/lugavin/go-scaffold/config"
 	"github.com/lugavin/go-scaffold/internal/pkg/controller/amqp"
-	"github.com/lugavin/go-scaffold/internal/pkg/controller/http/v1"
+	http "github.com/lugavin/go-scaffold/internal/pkg/controller/http/v1"
 	envt "github.com/lugavin/go-scaffold/internal/pkg/env"
 	"github.com/lugavin/go-scaffold/pkg/httpserver"
 )
@@ -26,14 +25,10 @@ func Run(cfg *config.Config) {
 	}
 	defer env.Close()
 
-	logger := env.Logger()
-
-	startKafkaConsumer(env)
+	amqp.NewMessageConsumer(env).Start()
 
 	// HTTP Server
-	router := chi.NewRouter()
-	v1.NewRouter(router, env)
-	httpServer := httpserver.New(router, httpserver.Port(cfg.HTTP.Port))
+	httpServer := httpserver.New(http.NewRouter(env), httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)
@@ -43,33 +38,14 @@ func Run(cfg *config.Config) {
 	select {
 	case s := <-interrupt:
 		// Server was interrupted
-		logger.Info("app - Run - signal: " + s.String())
+		env.Logger().Info("app - Run - signal: " + s.String())
 	case err = <-httpServer.Notify():
 		// Server failed to start
-		logger.Error("app - Run - httpServer.Notify", zap.Error(err))
+		env.Logger().Error("app - Run - httpServer.Notify", zap.Error(err))
 	}
 
 	// Shutdown
 	if err = httpServer.Shutdown(); err != nil {
-		logger.Error("app - Run - httpServer.Shutdown", zap.Error(err))
-	}
-}
-
-func startKafkaConsumer(env *envt.Environment) {
-	var (
-		cfg      = env.Config()
-		logger   = env.Logger()
-		consumer = env.KafkaConsumer()
-	)
-	handlers := map[string]amqp.TopicMessageHandler{
-		cfg.FooBarTopic.TopicName: amqp.NewFooBarMessageHandler(logger, cfg),
-	}
-	for topic, handler := range handlers {
-		go consumer.ConsumeTopic(
-			context.Background(),
-			[]string{topic},
-			1,
-			amqp.NewMessageHandler(logger, cfg, handler).HandleMessage,
-		)
+		env.Logger().Error("app - Run - httpServer.Shutdown", zap.Error(err))
 	}
 }

@@ -6,13 +6,7 @@ import (
 
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
-
-	"github.com/lugavin/go-scaffold/config"
 )
-
-type TopicMessageHandler interface {
-	HandleTopicMessage(ctx context.Context, r *kafka.Reader, msg kafka.Message)
-}
 
 // MessageHandler handler methods must implement kafka.Worker func method interface
 type MessageHandler interface {
@@ -21,12 +15,11 @@ type MessageHandler interface {
 
 type messageHandler struct {
 	logger  *zap.Logger
-	config  *config.Config
 	handler TopicMessageHandler
 }
 
-func NewMessageHandler(logger *zap.Logger, config *config.Config, handler TopicMessageHandler) *messageHandler {
-	return &messageHandler{logger, config, handler}
+func newMessageHandler(logger *zap.Logger, handler TopicMessageHandler) *messageHandler {
+	return &messageHandler{logger, handler}
 }
 
 func (h *messageHandler) HandleMessage(ctx context.Context, r *kafka.Reader, wg *sync.WaitGroup, workerID int) {

@@ -13,7 +13,7 @@ type fooBarMessageHandler struct {
 	config *config.Config
 }
 
-func NewFooBarMessageHandler(logger *zap.Logger, config *config.Config) *fooBarMessageHandler {
+func newFooBarMessageHandler(logger *zap.Logger, config *config.Config) *fooBarMessageHandler {
 	return &fooBarMessageHandler{logger, config}
 }
 
