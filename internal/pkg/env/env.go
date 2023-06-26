@@ -54,7 +54,7 @@ func (e *Environment) Close() {
 	//	e.pg.Close()
 	//}
 	if e.logger != nil {
-		_ = e.logger.Sync()
+		e.logger.Sync()
 	}
 }
 

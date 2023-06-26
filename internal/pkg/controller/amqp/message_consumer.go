@@ -21,15 +21,11 @@ type MessageConsumer struct {
 }
 
 func NewMessageConsumer(e *env.Environment) *MessageConsumer {
-	var (
-		logger = e.Logger()
-		cfg    = e.Config()
-	)
 	return &MessageConsumer{
-		logger:   logger,
+		logger:   e.Logger(),
 		consumer: e.KafkaConsumer(),
 		handlers: map[string]TopicMessageHandler{
-			cfg.FooBarTopic.TopicName: newFooBarMessageHandler(logger, cfg),
+			e.Config().FooBarTopic.TopicName: newFooBarMessageHandler(e.Logger()),
 		},
 	}
 }

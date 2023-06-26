@@ -44,10 +44,14 @@ func New(logger *zap.Logger, brokers []string) *producer {
 	return &producer{w}
 }
 
+// PublishMessage Kafka producers will cache messages in memory when sending messages,
+// and send the cached messages to Kafka brokers in batches once certain conditions are met to improve sending efficiency.
 func (p *producer) PublishMessage(ctx context.Context, msgs ...kafka.Message) error {
 	return p.w.WriteMessages(ctx, msgs...)
 }
 
+// Close Call the writer.Close() method to close the Kafka producer connection.
+// This ensures that all buffered messages are flushed to the Kafka broker and frees network connection resources.
 func (p *producer) Close() error {
 	return p.w.Close()
 }

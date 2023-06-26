@@ -3,9 +3,12 @@ package v1
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
+
 	"github.com/lugavin/go-scaffold/internal/pkg/env"
 )
 
@@ -22,6 +25,8 @@ func NewRouter(e *env.Environment) http.Handler {
 	// Options
 	router.Use(middleware.Logger)
 	router.Use(middleware.RealIP)
+	router.Use(middleware.Timeout(60 * time.Second))
+	router.Use(httprate.LimitByIP(100, 1*time.Minute))
 
 	// K8s probe
 	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
